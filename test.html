@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+  <head>
+    <script>
+        // define the callAPI function that takes a first name and last name as parameters
+        var create_user = (user_name)=>{
+            // instantiate a headers object
+            var myHeaders = new Headers();
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
+            // using built in JSON utility package turn object to string and store in a variable
+            var raw = JSON.stringify({"user_name":user_name});
+            // create a JSON object with parameters for API call and store in a variable
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            // make API call with parameters and use promises to get response
+            fetch("https://ffc9r1s4w9.execute-api.us-east-1.amazonaws.com/dev", requestOptions)
+            .then(response => response.text())
+            .then(result => alert(JSON.parse(result).body))
+            .catch(error => console.log('error', error));
+        }
+
+        var update_score = (user_name, score)=>{
+            // instantiate a headers object
+            var myHeaders = new Headers();
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
+            // using built in JSON utility package turn object to string and store in a variable
+            var raw = JSON.stringify({"user_name":user_name, "score":score});
+            // create a JSON object with parameters for API call and store in a variable
+            var requestOptions = {
+                method: 'PATCH',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            // make API call with parameters and use promises to get response
+            fetch("https://ffc9r1s4w9.execute-api.us-east-1.amazonaws.com/dev", requestOptions)
+            .then(response => response.text())
+            .then(result => alert(JSON.parse(result).body))
+            .catch(error => console.log('error', error));
+        }
+
+        var has_user_name = (user_name)=>{
+            // instantiate a headers object
+            var myHeaders = new Headers();
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
+            // using built in JSON utility package turn object to string and store in a variable
+            var raw = JSON.stringify({"user_name":user_name});
+            // create a JSON object with parameters for API call and store in a variable
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            // make API call with parameters and use promises to get response
+            fetch("https://ffc9r1s4w9.execute-api.us-east-1.amazonaws.com/dev/usernames", requestOptions)
+            .then(response => response.text())
+            .then(result => alert(JSON.parse(result).body))
+            .catch(error => console.log('error', error));
+        }
+
+        var get_table = ()=>{
+            // create a JSON object with parameters for API call and store in a variable
+            var requestOptions = {
+                method: 'GET',
+                redirect: 'follow'
+            };
+            // make API call with parameters and use promises to get response
+            fetch("https://ffc9r1s4w9.execute-api.us-east-1.amazonaws.com/dev", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                var parsed_items = JSON.parse(result).body
+                var temp = "";
+                var max_score = parsed_items[0].score;
+                for (var i=0; i<parsed_items.length; i++) {
+                    temp += "<tr>";
+                    temp += "<td>" + parsed_items[i].user_name + "</td>";
+                    temp += "<td>" + parsed_items[i].score + "</td>";
+                    if (parsed_items[i].score < 10) {
+                        var rank = "Intern";    
+                    } else if (parsed_items[i].score >= 10 && parsed_items[i].score < 20) {
+                        rank = "Software Engineer";
+                    } else if (parsed_items[i].score >= 20 && parsed_items[i].score < 30) {
+                        rank = "Director-Engineering";
+                    } else if (parsed_items[i].score >= 30 && parsed_items[i].score < max_score) {
+                        rank = "Vice President";
+                    } else if (parsed_items[i].score == max_score) {
+                        rank = "President and CEO";
+                    }
+                    temp += "<td>" + rank + "</td></tr>";
+                }
+                document.getElementById('data').innerHTML = temp;
+            }).catch(error => console.log('error', error));
+        }
+
+        
+    </script>
+  </head>
+  <body>
+      <div>
+        <label>Username :</label>
+        <input type="text" id="username">
+        <button type="button" onclick="create_user(document.getElementById('username').value)">Create User</button>
+      </div>
+      <hr>
+      <div>
+        <label>Username :</label>
+        <input type="text" id="username_update">
+        <label>Score : </label>
+        <input type="text" id="score">
+        <button type="button" onclick="update_score(document.getElementById('username_update').value, document.getElementById('score').value)">Update Score</button>
+      </div>
+      <hr>
+      <div>
+        <label>Username :</label>
+        <input type="text" id="has_user_name">
+        <button type="button" onclick="has_user_name(document.getElementById('has_user_name').value)">Has User?</button>
+      </div>
+      <hr>
+      <div>
+        <button type="button" onclick="get_table()">Get Table</button>
+      </div>
+      <div>
+          <table class="table">
+              <thead>
+                  <th>Username</th>
+                  <th>Score</th>
+                  <th>Rank</th>
+              </thead>
+              <tbody id='data'>
+
+              </tbody>
+          </table>
+      </div>
+  </body>
+</html>
